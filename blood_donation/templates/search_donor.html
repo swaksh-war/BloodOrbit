@@ -1,0 +1,88 @@
+{% extends "main.html" %}
+{% block title %}Search Donor{% endblock %}
+{% block content %}
+<div class="form-container">
+  <h2>Search for a Blood Donor</h2>
+  <form method="POST" action="{% url 'search_donors' %}">
+    {% csrf_token %}
+    <label for="blood_group">Blood Group:</label>
+    <input type="text" id="blood_group" name="blood_group" placeholder="Enter recipient's blood group (e.g., A+, O-)" required>
+
+    <label for="latitude">Latitude:</label>
+    <input type="text" id="latitude" name="latitude" placeholder="Enter recipient's location latitude" required>
+
+    <label for="longitude">Longitude:</label>
+    <input type="text" id="longitude" name="longitude" placeholder="Enter recipient's location longitude" required>
+
+    <button type="button" class="location-btn" onclick="getCurrentLocation()">Autofill Current Location</button>
+    <button type="submit">Search Donor</button>
+  </form>
+</div>
+
+{% if donors %}
+<div class="results-container">
+  <h3>Compatible Donors</h3>
+  <!-- Mobile Number field placed prominently above the donor table -->
+  <form method="POST" action="{% url 'send_email' %}">
+    {% csrf_token %}
+    <div class="mobile-number-field">
+      <label for="mobile_number">Your Mobile Number:</label>
+      <input type="number" id="mobile_number" name="mobile_number" placeholder="Enter your mobile number" required>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Blood Group</th>
+          <th>Latitude</th>
+          <th>Longitude</th>
+          <th>Distance (km)</th>
+          <th>Send Email</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for donor in donors %}
+        <tr>
+          <td>{{ donor.name }}</td>
+          <td>{{ donor.blood_group }}</td>
+          <td>{{ donor.latitude }}</td>
+          <td>{{ donor.longitude }}</td>
+          <td>{{ donor.distance|floatformat:2 }}</td>
+          <td>
+            <!-- The submit button carries the donor's contact number -->
+            <button type="submit" name="recipient_number" value="{{ donor.contact_number }}" class="email-btn">
+              Send Message
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </form>
+</div>
+{% else %}
+<div class="results-container">
+  <h3>No Compatible Donors Found</h3>
+</div>
+{% endif %}
+
+<script>
+  function getCurrentLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        function (position) {
+          document.getElementById('latitude').value = position.coords.latitude;
+          document.getElementById('longitude').value = position.coords.longitude;
+          alert('Your current location has been autofilled!');
+        },
+        function (error) {
+          alert('Error fetching location. Please enable location services and try again.');
+        }
+      );
+    } else {
+      alert('Geolocation is not supported by your browser.');
+    }
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'main.html' %}
+{% block title %}Donor Registration{% endblock %}
+{% block content %}
+<div class="form-container">
+  <h2>Register as a Blood Donor</h2>
+  <form method="POST" action="{% url 'register_donor' %}">
+    {% csrf_token %}
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+
+    <label for="age">Age:</label>
+    <input type="number" id="age" name="age" placeholder="Enter your age" required>
+
+    <label for="blood_group">Blood Group:</label>
+    <input type="text" id="blood_group" name="blood_group" placeholder="e.g., A+, O-" required>
+
+    <label for="long_term_disease">Long Term Disease:</label>
+    <input type="text" id="long_term_disease" name="long_term_disease" placeholder="If applicable">
+
+    <label for="last_time_donated">Last Time Donated:</label>
+    <input type="date" id="last_time_donated" name="last_time_donated">
+
+    <label for="contact_number">Contact Number (phone):</label>
+    <input type="number" id="contact_number" name="contact_number" placeholder="Enter your Phone Number without country code(validate for india only)" required>
+
+    <label for="latitude">Latitude:</label>
+    <input type="text" id="latitude" name="latitude" placeholder="Enter your location's latitude" required>
+
+    <label for="longitude">Longitude:</label>
+    <input type="text" id="longitude" name="longitude" placeholder="Enter your location's longitude" required>
+
+    <button type="button" class="location-btn" onclick="getCurrentLocation()">Get Current Location</button>
+    <button type="submit">Register</button>
+  </form>
+</div>
+
+<script>
+  // Fetch the user's current location and populate the latitude/longitude fields
+  function getCurrentLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        function (position) {
+          document.getElementById('latitude').value = position.coords.latitude;
+          document.getElementById('longitude').value = position.coords.longitude;
+          alert('Location fetched successfully!');
+        },
+        function (error) {
+          alert('Error fetching location. Please ensure location services are enabled.');
+        }
+      );
+    } else {
+      alert('Geolocation is not supported by your browser.');
+    }
+  }
+</script>
+{% endblock %}

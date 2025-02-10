@@ -1,0 +1,99 @@
+{% extends 'main.html' %}
+{% block title %}Home{% endblock %}
+{% block content %}
+
+<!-- Hero Section -->
+<section class="hero">
+  <div class="hero-content">
+    <h1>Welcome to BloodOrbit</h1>
+    <p>Your trusted platform for connecting blood donors and recipients. Donate blood, save lives.</p>
+    {% if not request.user.is_authenticated %}
+      <a href="#user-section" class="btn">Get Started</a>
+    {% endif %}
+  </div>
+</section>
+
+
+<section id="user-section">
+  {% if request.user.is_authenticated %}
+    <div class="tab">
+      <button class="tablinks">
+        <a href="{% url 'register_donor' %}" style="text-decoration:none; color:inherit;">Register New Donor</a>
+      </button>
+      <button class="tablinks">
+        <a href="{% url 'search_donors' %}" style="text-decoration:none; color:inherit;">Search For Donor</a>
+      </button>
+    </div>
+  {% else %}
+    <div class="tab">
+      <button class="tablinks" onclick="openCategory(event, 'User')">User</button>
+    </div>
+    <div id="User" class="tabcontent">
+      <div class="inner-tab">
+        <button class="inner-tablinks" onclick="openForm(event, 'UserRegister')">Register</button>
+        <button class="inner-tablinks" onclick="openForm(event, 'UserLogin')">Login</button>
+      </div>
+      <div id="UserRegister" class="form-container" style="display:none;">
+        <h3>Register</h3>
+        <form method="POST" action="/register">
+          {% csrf_token %}
+          <input name="username" type="text" placeholder="Name" required>
+          <input name="email" type="email" placeholder="Email" required>
+          <input name="password" type="password" placeholder="Password" required>
+          <button type="submit">Register</button>
+        </form>
+      </div>
+      <div id="UserLogin" class="form-container" style="display:none;">
+        <h3>Login</h3>
+        <form method="POST" action="/login">
+          {% csrf_token %}
+          <input name="username" type="text" placeholder="Username" required>
+          <input name="password" type="password" placeholder="Password" required>
+          <button type="submit">Login</button>
+        </form>
+      </div>
+    </div>
+  {% endif %}
+</section>
+
+<!-- About Section -->
+<section class="about">
+  <div class="form-container">
+    <h2>About BloodBank</h2>
+    <p>BloodBank is dedicated to connecting voluntary blood donors with those in need. Our mission is to facilitate the donation process so that every drop counts in saving lives. Join us in this noble cause.</p>
+  </div>
+</section>
+
+{% endblock %}
+{% block script %}
+<script>
+  
+  function openCategory(evt, categoryName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].classList.remove("active");
+    }
+    document.getElementById(categoryName).style.display = "block";
+    evt.currentTarget.classList.add("active");
+  }
+
+  function openForm(evt, formName) {
+    var i, formcontainer, innerTablinks;
+    formcontainer = document.getElementsByClassName("form-container");
+    for (i = 0; i < formcontainer.length; i++) {
+      formcontainer[i].style.display = "none";
+    }
+    innerTablinks = document.getElementsByClassName("inner-tablinks");
+    for (i = 0; i < innerTablinks.length; i++) {
+      innerTablinks[i].classList.remove("active");
+    }
+    document.getElementById(formName).style.display = "block";
+    evt.currentTarget.classList.add("active");
+  }
+</script>
+{% endblock %}
